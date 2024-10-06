@@ -8,6 +8,15 @@
       body {
         margin: 0;
       }
+      #planet-info {
+        position: absolute; /* Positioning the info div */
+        top: 10px; /* Adjust the position as needed */
+        left: 10px; /* Adjust the position as needed */
+        color: white; /* Text color */
+        background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+        padding: 10px; /* Padding around the text */
+        border-radius: 5px; /* Rounded corners */
+      }
     </style>
     <script type="importmap">
       {
@@ -19,6 +28,46 @@
     </script>
   </head>
   <body>
+    <div id="planet-info"></div> <!-- Div to display planet information -->
     <script type="module" src="mars.js"></script>
+    <script type="module">
+      // Function to fetch planet data from the API
+      async function fetchPlanetData(planetName) {
+        const apiUrl = `https://planet-info-api.vercel.app/planet/${planetName}`;
+        
+        try {
+          const response = await fetch(apiUrl);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          displayPlanetInfo(data);
+        } catch (error) {
+          console.error('Error fetching planet data:', error);
+          document.getElementById('planet-info').innerText = 'Error fetching planet data.';
+        }
+      }
+
+      // Function to display planet information in the div
+      function displayPlanetInfo(data) {
+        const infoDiv = document.getElementById('planet-info');
+        infoDiv.innerHTML = `
+          <h2>${data.Planet_Name}</h2>
+          <p><strong>Type:</strong> ${data.Type}</p>
+          <p><strong>Distance from Sun (AU):</strong> ${data.Distance_from_Sun_AU}</p>
+          <p><strong>Diameter (km):</strong> ${data.Diameter_km}</p>
+          <p><strong>Rotation Period (days):</strong> ${data.Rotation_Period_days}</p>
+          <p><strong>Orbital Period (years):</strong> ${data.Orbital_Period_years}</p>
+          <p><strong>Moons:</strong> ${data.Moons}</p>
+          <p><strong>Temperature Range (°C):</strong> ${data.Temperature_Range_C}</p>
+          <p><strong>Interesting Facts:</strong> ${data.Interesting_Facts}</p>
+        `;
+      }
+
+      // Call the API for Mars data
+      fetchPlanetData('Mars');
+    </script>
   </body>
 </html>
